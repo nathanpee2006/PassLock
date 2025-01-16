@@ -1,0 +1,21 @@
+{% extends "password_manager/layout.html" %}
+
+{% block body %}
+
+    <h2>Login</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form action="{% url 'login' %}" method="POST">
+        {% csrf_token %}
+        <input autofocus type="text" name="username" placeholder="Username">
+        <input type="password" name="password" placeholder="Master Password">
+        <button type="submit">Login</button>
+    </form>
+    <a href="{% url 'register' %}">Register</a>
+
+{% endblock %}
