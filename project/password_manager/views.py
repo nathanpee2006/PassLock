@@ -6,11 +6,12 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, Login, Card, PIN, SecureNote
+from .forms import LoginForm, CardForm, PINForm, SecureNoteForm 
 
 from . import utils
 
@@ -18,7 +19,9 @@ from . import utils
 def index(request):
     
     # GET
-    return render(request, "password_manager/index.html")
+    return render(request, "password_manager/index.html", {
+        "form": LoginForm()
+    })
 
 
 def login_view(request):
@@ -101,3 +104,108 @@ def register(request):
     # GET
     else:
         return render(request, "password_manager/register.html")
+
+
+def get_form(request):
+    
+    # GET
+    type = request.GET.get("type") 
+
+    if type == "login":
+        return JsonResponse({
+            "form": LoginForm().as_div()
+        })
+    elif type == "card":
+        return JsonResponse({
+            "form": CardForm().as_div()
+        })
+    elif type == "pin":
+        return JsonResponse({
+            "form": PINForm().as_div()
+        })
+    elif type == "secure-note": 
+        return JsonResponse({
+            "form": SecureNoteForm().as_div()
+        })
+    else:
+        print("Invalid form.")
+        return JsonResponse({
+            "error": "Invalid form type."
+        })
+
+
+def add(request, type):
+    
+    # POST
+    if request.method == "POST":
+
+        # Decrypt encrypted data encryption key
+        encrypted_DEK = request.session.get("encrypted_DEK")
+        if encrypted_DEK:
+            nonce = encrypted_DEK["nonce"]
+            ciphertext = encrypted_DEK["ciphertext"]
+            tag = encrypted_DEK["tag"]
+            KEK = settings.KEY_ENCRYPTION_KEY
+            result = utils.decrypt_data_encryption_key(nonce, ciphertext, tag, KEK)
+            DEK = result["plaintext"]
+        else:
+            messages.error("Error occured. Please login again.")
+            HttpResponseRedirect(reverse("login")) 
+
+        # Encrypt sensitive data with data encryption key
+        if type == "login":
+            form = LoginForm(request.POST)
+            if form.is_valid(): 
+                login_model = form.save(commit=False)
+                login_model.user_id = request.user.id
+                encrypted_password = utils.encrypt_data(login_model.password, DEK)
+                login_model.password_nonce = encrypted_password["nonce"]
+                login_model.password = encrypted_password["ciphertext"]
+                login_model.password_tag = encrypted_password["tag"]
+                login_model.save()
+
+        elif type == "card":
+            form = CardForm(request.POST)
+            if form.is_valid(): 
+                card_model = form.save(commit=False)
+                card_model.user_id = request.user.id
+                encrypted_number = utils.encrypt_data(card_model.number, DEK)
+                card_model.number_nonce = encrypted_number["nonce"]
+                card_model.number = encrypted_number["ciphertext"]
+                card_model.number_tag = encrypted_number["tag"]
+                encrypted_cvv = utils.encrypt_data(card_model.cvv, DEK)
+                card_model.cvv_nonce = encrypted_cvv["nonce"]
+                card_model.cvv = encrypted_cvv["ciphertext"]
+                card_model.cvv_tag = encrypted_cvv["tag"]
+                card_model.save()
+
+        elif type == "pin":
+            form = PINForm(request.POST)
+            if form.is_valid():
+                pin_model = form.save(commit=False)
+                pin_model.user_id = request.user.id
+                encrypted_code = utils.encrypt_data(pin_model.code, DEK)
+                pin_model.code_nonce = encrypted_code["nonce"]
+                pin_model.code = encrypted_code["ciphertext"]
+                pin_model.code_tag = encrypted_code["tag"]
+                pin_model.save()
+
+        elif type == "secure-note":
+            form = SecureNoteForm(request.POST)
+            if form.is_valid():
+                secure_note_model = form.save(commit=False)
+                secure_note_model.user_id = request.user.id
+                encrypted_notes = utils.encrypt_data(secure_note_model.notes, DEK)
+                secure_note_model.notes_nonce = encrypted_notes["nonce"]
+                secure_note_model.notes = encrypted_notes["ciphertext"] 
+                secure_note_model.notes_tag = encrypted_notes["tag"]
+                secure_note_model.save()
+
+        else:
+            messages.error(request, "Invalid type. Please select type from the dropdown.")
+            return HttpResponseRedirect(reverse("index"))
+
+        return HttpResponseRedirect(reverse("index"))
+
+    else:
+        return HttpResponse("Invalid request method.")

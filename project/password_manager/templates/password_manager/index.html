@@ -1,7 +1,52 @@
 {% extends "password_manager/layout.html" %}
+{% load static %}
 
 {% block body %}
 
     <h2>Hello, {{ user.username }}!</h2>
 
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Add Item
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add Item</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div>{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    <form action="{% url 'add' type='login' %}" method="POST">
+                        <select>
+                            <option value="login">Login</option>
+                            <option value="card">Card</option>
+                            <option value="pin">PIN</option>
+                            <option value="secure-note">Secure Note</option>
+                        </select>
+                        {% csrf_token %}
+                        <div id="form-fields">
+                            {{ form }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <p>Enter your information on the following fields. When you click "Save" your data is encrypted before being stored in the database.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'password_manager/index.js' %}"></script>
 {% endblock %}
