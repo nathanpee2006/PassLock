@@ -24,9 +24,9 @@ class PINForm(ModelForm):
     class Meta:
         model = PIN
         fields = ["name", "code", "note"]
-        widgets = { 
-            "code": PasswordInput()
-        }
+        # widgets = { 
+        #     "code": PasswordInput()
+        # }
 
 class SecureNoteForm(ModelForm):
    class Meta:

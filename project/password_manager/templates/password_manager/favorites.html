@@ -1,0 +1,47 @@
+{% extends "password_manager/layout.html" %}
+{% load static }
+
+{% block body %}
+
+    <h2>Favorite Items</h2>
+
+    <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Title</th>
+            <th scope="col">User</th>
+            <th scope="col">Modified At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for credential in credentials %}
+                <tr>
+                    <td>star</td>
+                    <td><a data-bs-toggle="offcanvas" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">{{ credential.name }}</a></td>
+                    {% if credential.password %}
+                        <td>{{ credential.username }}</td>
+                    {% elif credential.number %}
+                        <td>{{ credential.cardholder }}</td>
+                    {% elif credential.code %}
+                        <td>{{ credential.user }}</td>
+                    {% else %}
+                        <td>{{ credential.user }}</td>
+                    {% endif %}
+                    <td><a data-bs-toggle="offcanvas" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">{{ credential.modified_at }}</a></td>
+                </tr>
+            </a>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Offcanvas with body scrolling</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <p>Try scrolling the rest of the page to see this option in action.</p>
+        </div>
+      </div>
+{% endblock %}

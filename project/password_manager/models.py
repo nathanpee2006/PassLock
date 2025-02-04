@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -18,6 +19,7 @@ class CommonInfo(models.Model):
 
 
 class Login(CommonInfo):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=100)
     password = models.TextField()
     website = models.URLField(null=True, blank=True)
@@ -27,6 +29,7 @@ class Login(CommonInfo):
 
 
 class Card(CommonInfo):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     cardholder = models.CharField(max_length=100)
     number = models.CharField(max_length=19) 
     expiration_date = models.DateField()
@@ -38,12 +41,15 @@ class Card(CommonInfo):
 
 
 class PIN(CommonInfo):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=6)
     note = models.TextField(blank=True)
     code_nonce = models.CharField(max_length=24, default="")
     code_tag = models.CharField(max_length=24, default="")
 
+
 class SecureNote(CommonInfo):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     notes = models.TextField()
     notes_nonce = models.CharField(max_length=24, default="")
     notes_tag = models.CharField(max_length=24, default="")

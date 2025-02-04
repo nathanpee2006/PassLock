@@ -45,8 +45,62 @@
         </div>
     </div>
 
+    <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Title</th>
+            <th scope="col">Modified At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for credential in credentials %}
+            {% if credential.password %}
+                <tr class=table-row data-bs-toggle="offcanvas" data-type="login" data-uuid="{{ credential.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
+                    <td>star</td>
+                    <td>{{ credential.name }}</td>
+                    <td>{{ credential.modified_at }}</td>
+                </tr>
+            {% elif credential.number %}
+                <tr class=table-row data-bs-toggle="offcanvas" data-type="card" data-uuid="{{ credential.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
+                    <td>star</td>
+                    <td>{{ credential.name }}</td>
+                    <td>{{ credential.modified_at }}</td>
+                </tr>
+            {% elif credential.code %}
+                <tr class=table-row data-bs-toggle="offcanvas" data-type="pin" data-uuid="{{ credential.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
+                    <td>star</td>
+                    <td>{{ credential.name }}</td>
+                    <td>{{ credential.modified_at }}</td>
+                </tr>
+            {% else %}
+                <tr class=table-row data-bs-toggle="offcanvas" data-type="secure-note" data-uuid="{{ credential.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
+                    <td>star</td>
+                    <td>{{ credential.name }}</td>
+                    <td>{{ credential.modified_at }}</td>
+                </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="static" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Offcanvas with body scrolling</h5>
+          <button id="offcanvas-btn-close" type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form id="credential-form" action="{ url 'get_credentials' }" method="POST">
+                {% csrf_token %}
+                <div id="credential-form-fields">
+                </div>
+            </form>
+        </div>
+      </div>
+
 {% endblock %}
 
 {% block script %}
     <script src="{% static 'password_manager/index.js' %}"></script>
+    <script src="{% static 'password_manager/favorites.js' %}"></script>
 {% endblock %}

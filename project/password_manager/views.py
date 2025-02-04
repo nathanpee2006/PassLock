@@ -1,3 +1,4 @@
+import json
 import os
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -8,7 +9,9 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.urls import reverse
+from itertools import chain
 
 from .models import User, Login, Card, PIN, SecureNote
 from .forms import LoginForm, CardForm, PINForm, SecureNoteForm 
@@ -19,8 +22,20 @@ from . import utils
 def index(request):
     
     # GET
+    user_id = request.user.id
+
+    login = Login.objects.filter(user_id=user_id)
+    card = Card.objects.filter(user_id=user_id)
+    pin = PIN.objects.filter(user_id=user_id)
+    secure_note = SecureNote.objects.filter(user_id=user_id)
+
+    credentials_list = list(chain(login, card, pin, secure_note))
+
+    credentials = sorted(credentials_list, key=lambda credential:credential.modified_at, reverse=True)
+
     return render(request, "password_manager/index.html", {
-        "form": LoginForm()
+        "form": LoginForm(),
+        "credentials": credentials 
     })
 
 
@@ -128,7 +143,6 @@ def get_form(request):
             "form": SecureNoteForm().as_div()
         })
     else:
-        print("Invalid form.")
         return JsonResponse({
             "error": "Invalid form type."
         })
@@ -208,4 +222,65 @@ def add(request, type):
         return HttpResponseRedirect(reverse("index"))
 
     else:
-        return HttpResponse("Invalid request method.")
+        return JsonResponse({"error": "Invalid request method."})
+
+
+@login_required(login_url="/login")
+def get_credentials(request):
+
+    # POST 
+    if request.method == "POST":
+
+        # Decrypt encrypted data encryption key
+        # encrypted_DEK = request.session.get("encrypted_DEK")
+        # if encrypted_DEK:
+        #     nonce = encrypted_DEK["nonce"]
+        #     ciphertext = encrypted_DEK["ciphertext"]
+        #     tag = encrypted_DEK["tag"]
+        #     KEK = settings.KEY_ENCRYPTION_KEY
+        #     result = utils.decrypt_data_encryption_key(nonce, ciphertext, tag, KEK)
+        #     DEK = result["plaintext"]
+        # else:
+        #     messages.error("Error occured. Please login again.")
+        #     HttpResponseRedirect(reverse("login")) 
+
+        # Ensure user is first authenticated 
+        data = json.loads(request.body) 
+        type = data["type"] 
+        uuid = data["uuid"] 
+        user_id = request.user.id
+
+        if type == "login":
+            instance = Login.objects.get(id=uuid, user_id=user_id)
+            return JsonResponse({
+                "form": LoginForm(instance=instance).as_div(),
+            })
+        elif type == "card":
+            instance = Card.objects.get(id=uuid, user_id=user_id)
+            return JsonResponse({
+                "form": CardForm(instance=instance).as_div()
+            })
+        elif type == "pin":
+            instance = PIN.objects.get(id=uuid, user_id=user_id)
+            return JsonResponse({
+                "form": PINForm(instance=instance).as_div()
+            })
+        elif type == "secure-note":
+            instance = SecureNote.objects.get(id=uuid, user_id=user_id)
+            return JsonResponse({
+                "form": SecureNoteForm(instance=instance).as_div()
+            })
+        else:
+            return JsonResponse({
+                "error": "Invalid form type."
+            })
+
+    else:
+        return JsonResponse({"error": "Invalid request method."})
+
+
+@login_required(login_url="/login")
+def favorites(request):
+
+    # GET
+    return render(request, "password_manager/favorites.html")
