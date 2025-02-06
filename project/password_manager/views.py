@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt 
 from django.urls import reverse
 from itertools import chain
 
@@ -30,7 +30,6 @@ def index(request):
     secure_note = SecureNote.objects.filter(user_id=user_id)
 
     credentials_list = list(chain(login, card, pin, secure_note))
-
     credentials = sorted(credentials_list, key=lambda credential:credential.modified_at, reverse=True)
 
     return render(request, "password_manager/index.html", {
@@ -283,4 +282,127 @@ def get_credentials(request):
 def favorites(request):
 
     # GET
-    return render(request, "password_manager/favorites.html")
+    user_id = request.user.id
+
+    login = Login.objects.filter(is_favorited=True, user_id=user_id)
+    card = Card.objects.filter(is_favorited=True, user_id=user_id)
+    pin = PIN.objects.filter(is_favorited=True, user_id=user_id)
+    secure_note = SecureNote.objects.filter(is_favorited=True, user_id=user_id)
+
+    favorites_list = list(chain(login, card, pin, secure_note))
+    favorites = sorted(favorites_list, key=lambda favorite:favorite.modified_at, reverse=True)
+
+    return render(request, "password_manager/favorites.html", {
+        "favorites": favorites
+    })
+
+
+@login_required(login_url="/login")
+@csrf_exempt
+def favorite(request):
+    
+    if request.method == "PATCH":
+        data = json.loads(request.body)
+        type = data["type"]
+        uuid = data["uuid"]
+        user_id = request.user.id
+
+        if type == "login":
+            login = Login.objects.get(id=uuid, user_id=user_id)
+            login.is_favorited = True 
+            login.save()
+            return JsonResponse({
+                "message": "Successfully favorited credential.",
+                "status_code": 200
+            })
+        elif type == "card":
+            card = Card.objects.get(id=uuid, user_id=user_id)
+            card.is_favorited = True 
+            card.save()
+            return JsonResponse({
+                "message": "Successfully favorited credential.",
+                "status_code": 200
+            })
+        elif type == "pin":
+            pin = PIN.objects.get(id=uuid, user_id=user_id)
+            pin.is_favorited = True 
+            pin.save()
+            return JsonResponse({
+                "message": "Successfully favorited credential.",
+                "status_code": 200
+            })
+        elif type == "secure-note":
+            secure_note = SecureNote.objects.get(id=uuid, user_id=user_id)
+            secure_note.is_favorited = True 
+            secure_note.save()
+            return JsonResponse({
+                "message": "Successfully favorited credential.",
+                "status_code": 200
+            })
+        else:
+            return JsonResponse({
+                "message": "Invalid credential type.",
+                "status_code": 400 
+            })
+
+    else:
+        return JsonResponse({
+                "error": "Invalid request method.",
+                "status": 400
+            })
+
+
+@login_required(login_url="/login")
+@csrf_exempt
+def unfavorite(request):
+
+    if request.method == "PATCH":
+        data = json.loads(request.body)
+        type = data["type"]
+        uuid = data["uuid"]
+        user_id = request.user.id
+
+        if type == "login":
+            login = Login.objects.get(id=uuid, user_id=user_id)
+            login.is_favorited = False 
+            login.save()
+            return JsonResponse({
+                "message": "Successfully unfavorited credential.",
+                "status_code": 200
+            })
+
+        elif type == "card":
+            card = Card.objects.get(id=uuid, user_id=user_id)
+            card.is_favorited = False 
+            card.save()
+            return JsonResponse({
+                "message": "Successfully unfavorited credential.",
+                "status_code": 200
+            })
+        elif type == "pin":
+            pin = PIN.objects.get(id=uuid, user_id=user_id)
+            pin.is_favorited = False 
+            pin.save()
+            return JsonResponse({
+                "message": "Successfully unfavorited credential.",
+                "status_code": 200
+            })
+        elif type == "secure-note":
+            secure_note = SecureNote.objects.get(id=uuid, user_id=user_id)
+            secure_note.is_favorited = False 
+            secure_note.save()
+            return JsonResponse({
+                "message": "Successfully unfavorited credential.",
+                "status_code": 200
+            })
+        else:
+            return JsonResponse({
+                "message": "Invalid credential type.",
+                "status_code": 400 
+            })
+
+    else:
+        return JsonResponse({
+                "error": "Invalid request method.",
+                "status": 400
+        })

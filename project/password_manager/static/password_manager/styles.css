@@ -2,6 +2,21 @@ textarea {
     height: 100px;
 }
 
-.table-row {
+.table-row td:not(:first-child) {
     cursor: pointer;
 }
+
+.favorite-btn {
+    border: none;
+    background: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.favorite {
+    color: #FFD700;
+}
+
+
+
+

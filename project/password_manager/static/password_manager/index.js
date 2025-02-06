@@ -1,32 +1,43 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    const select = document.querySelector('select');
-    select.onchange = () => {
-        let type = select.value;
+    if (document.querySelector('select') != null) {
+        const select = document.querySelector('select');
+        select.onchange = () => {
+            let type = select.value;
 
-        const form = document.querySelector('form');
-        form.setAttribute('action', `/add/${type}`)
+            const form = document.querySelector('form');
+            form.setAttribute('action', `/add/${type}`)
 
-        const formFields = document.getElementById('form-fields');
-        formFields.innerHTML = '';
+            const formFields = document.getElementById('form-fields');
+            formFields.innerHTML = '';
 
-        getForm(type);
-    }; 
+            getForm(type);
+        }
+    }
+ 
 
     const tableRows = document.querySelectorAll('.table-row');
     tableRows.forEach((tableRow) => {
-        tableRow.addEventListener('click', () => {
-            let type = tableRow.dataset.type;
-            let uuid = tableRow.dataset.uuid;
-            console.log(type);
-            console.log(uuid);
-            getUserCredentials(type, uuid);
-            window.location.href = '#offcanvasScrolling';
+
+        let type = tableRow.dataset.type;
+        let uuid = tableRow.dataset.uuid;
+
+        const tableRowData = tableRow.querySelectorAll('td:not(:first-child)');
+        tableRowData.forEach((tableData) => {
+            tableData.addEventListener('click', () => {
+                getUserCredentials(type, uuid);
+                window.location.href = '#offcanvasScrolling';
+            }) 
         })
     })
 
     document.getElementById('offcanvas-btn-close').addEventListener('click', () => {
-        window.location.href = '/';
+        if (window.location.hash = '#offcanvasScrolling') {
+            window.location.href = '/';
+        }
+        if (window.location.href.includes('/favorites#offcanvasScrolling')) {
+            window.location.href = '/favorites';
+        }
     })
 
 });
@@ -57,6 +68,7 @@ async function getForm(type) {
 
 async function getUserCredentials(type, uuid) {
 
+    console.log(type, uuid);
     const csrftoken = document.getElementById('credential-form').querySelector('input[name=csrfmiddlewaretoken]').value;
     
     try {
@@ -71,7 +83,7 @@ async function getUserCredentials(type, uuid) {
                 uuid: uuid
             }),
             mode: 'same-origin'
-        });
+        })
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }

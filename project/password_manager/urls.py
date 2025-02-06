@@ -10,5 +10,7 @@ urlpatterns = [
     path("get-form", views.get_form, name="get_form"),
     path("add/<str:type>", views.add, name="add"),
     path("get-credentials", views.get_credentials, name="get_credentials"),
-    path("favorites", views.favorites, name="favorites")
+    path("favorites", views.favorites, name="favorites"),
+    path("favorite", views.favorite, name="favorite"),
+    path("unfavorite", views.unfavorite, name="unfavorite")
 ]
