@@ -253,21 +253,25 @@ def get_credentials(request):
             instance = Login.objects.get(id=uuid, user_id=user_id)
             return JsonResponse({
                 "form": LoginForm(instance=instance).as_div(),
+                "is_favorited": instance.is_favorited
             })
         elif type == "card":
             instance = Card.objects.get(id=uuid, user_id=user_id)
             return JsonResponse({
-                "form": CardForm(instance=instance).as_div()
+                "form": CardForm(instance=instance).as_div(),
+                "is_favorited": instance.is_favorited
             })
         elif type == "pin":
             instance = PIN.objects.get(id=uuid, user_id=user_id)
             return JsonResponse({
-                "form": PINForm(instance=instance).as_div()
+                "form": PINForm(instance=instance).as_div(),
+                "is_favorited": instance.is_favorited
             })
         elif type == "secure-note":
             instance = SecureNote.objects.get(id=uuid, user_id=user_id)
             return JsonResponse({
-                "form": SecureNoteForm(instance=instance).as_div()
+                "form": SecureNoteForm(instance=instance).as_div(),
+                "is_favorited": instance.is_favorited
             })
         else:
             return JsonResponse({

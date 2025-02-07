@@ -18,9 +18,9 @@
             {% if favorite.password %}
                 <tr class=table-row data-bs-toggle="offcanvas" data-type="login" data-uuid="{{ favorite.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
                     {% if favorite.is_favorited %}
-                        <td><button class="favorite-btn" data-uuid="{{ favorite.id }}"><i class="bi bi-star-fill favorite"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star-fill favorite"></i></button></td>
                     {% else %}
-                        <td><button class="favorite-btn" data-uuid="{{ favorite.id }}"><i class="bi bi-star"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star"></i></button></td>
                     {% endif %}
                     <td>{{ favorite.name }}</td>
                     <td>{{ favorite.modified_at }}</td>
@@ -28,9 +28,9 @@
             {% elif favorite.number %}
                 <tr class=table-row data-bs-toggle="offcanvas" data-type="card" data-uuid="{{ favorite.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
                     {% if favorite.is_favorited %}
-                        <td><button class="favorite-btn" data-uuid="{{ favorite.id }}"><i class="bi bi-star-fill favorite"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star-fill favorite"></i></button></td>
                     {% else %}
-                        <td><button class="favorite-btn" data-uuid="{{ favorite.id }}"><i class="bi bi-star"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star"></i></button></td>
                     {% endif %}
                     <td>{{ favorite.name }}</td>
                     <td>{{ favorite.modified_at }}</td>
@@ -38,9 +38,9 @@
             {% elif favorite.code %}
                 <tr class=table-row data-bs-toggle="offcanvas" data-type="pin" data-uuid="{{ favorite.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
                     {% if favorite.is_favorited %}
-                        <td><button class="favorite-btn" data-uuid="{{ favorite.id }}"><i class="bi bi-star-fill favorite"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star-fill favorite"></i></button></td>
                     {% else %}
-                        <td><button class="favorite-btn" data-uuid="{{ favorite.id }}"><i class="bi bi-star"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star"></i></button></td>
                     {% endif %}
                     <td>{{ favorite.name }}</td>
                     <td>{{ favorite.modified_at }}</td>
@@ -48,9 +48,9 @@
             {% else %}
                 <tr class=table-row data-bs-toggle="offcanvas" data-type="secure-note" data-uuid="{{ favorite.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
                     {% if favorite.is_favorited %}
-                        <td><button class="favorite-btn" data-uuid="{{ favorite.id }}"><i class="bi bi-star-fill favorite"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star-fill favorite"></i></button></td>
                     {% else %}
-                        <td><button class="favorite-btn" data-uuid="{{ favorite.id }}"><i class="bi bi-star"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star"></i></button></td>
                     {% endif %}
                     <td>{{ favorite.name }}</td>
                     <td>{{ favorite.modified_at }}</td>
@@ -66,9 +66,9 @@
         <button id="offcanvas-btn-close" type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
-          <form id="favorite-form" action="{ url 'get_credentials' }" method="POST">
+          <form id="credential-form" action="{ url 'get_credentials' }" method="POST">
               {% csrf_token %}
-              <div id="favorite-form-fields">
+              <div id="credential-form-fields">
               </div>
           </form>
       </div>
@@ -77,6 +77,6 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'password_manager/index.js' %}"></script>
-    <script src="{% static 'password_manager/favorites.js' %}"></script>
+    <script src="{% static 'password_manager/index.js' %}" type="module"></script>
+    <script src="{% static 'password_manager/favorites.js' %}" type="module"></script>
 {% endblock %}

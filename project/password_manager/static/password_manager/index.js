@@ -1,6 +1,9 @@
-document.addEventListener('DOMContentLoaded', function() {
+import { favorite } from "./favorites.js";
+import { unfavorite } from "./favorites.js";
 
-    if (document.querySelector('select') != null) {
+document.addEventListener('DOMContentLoaded', function () {
+
+    if (document.querySelector('select') !== null) {
         const select = document.querySelector('select');
         select.onchange = () => {
             let type = select.value;
@@ -14,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
             getForm(type);
         }
     }
- 
+
 
     const tableRows = document.querySelectorAll('.table-row');
     tableRows.forEach((tableRow) => {
@@ -27,9 +30,10 @@ document.addEventListener('DOMContentLoaded', function() {
             tableData.addEventListener('click', () => {
                 getUserCredentials(type, uuid);
                 window.location.href = '#offcanvasScrolling';
-            }) 
+            })
         })
     })
+
 
     document.getElementById('offcanvas-btn-close').addEventListener('click', () => {
         if (window.location.hash = '#offcanvasScrolling') {
@@ -70,12 +74,12 @@ async function getUserCredentials(type, uuid) {
 
     console.log(type, uuid);
     const csrftoken = document.getElementById('credential-form').querySelector('input[name=csrfmiddlewaretoken]').value;
-    
+
     try {
         const response = await fetch('/get-credentials', {
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken 
+                'X-CSRFToken': csrftoken
             },
             method: 'POST',
             body: JSON.stringify({
@@ -88,11 +92,34 @@ async function getUserCredentials(type, uuid) {
             throw new Error(`Response status: ${response.status}`);
         }
         const json = await response.json();
+        console.log(json);
         if (json.form) {
             document.getElementById('credential-form-fields').innerHTML = json.form;
+
+            let name = document.querySelector('.offcanvas').querySelector('input[name=name]').value;
+            document.querySelector('.offcanvas-title').innerHTML = name;
+
+            const favoriteButton = document.createElement('button');
+            favoriteButton.className = 'favorite-btn';
+            if (!json.is_favorited) {
+                favoriteButton.innerHTML = '<i class="bi bi-star"></i>';
+            } else {
+                favoriteButton.innerHTML = '<i class="bi bi-star-fill favorite"></i>';
+            }
+
+            document.querySelector('.offcanvas-title').insertAdjacentElement("afterend", favoriteButton);
+            favoriteButton.addEventListener('click', () => {
+                if (favoriteButton.firstChild.className === 'bi bi-star') {
+                    favorite(type, uuid);
+                    favoriteButton.firstChild.className = 'bi bi-star-fill favorite';
+                } else {
+                    unfavorite(type, uuid);
+                    favoriteButton.firstChild.className = 'bi bi-star';
+                }
+            })
         }
         else {
-            document.getElementById('credential.form-fields').innerHTML = json.error;
+            document.getElementById('credential-form-fields').innerHTML = json.error;
         }
     } catch (error) {
         console.error(error.message);

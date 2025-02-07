@@ -58,9 +58,9 @@
             {% if credential.password %}
                 <tr class=table-row data-bs-toggle="offcanvas" data-type="login" data-uuid="{{ credential.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
                     {% if credential.is_favorited %}
-                        <td><button class="favorite-btn" data-uuid="{{ credential.id }}"><i class="bi bi-star-fill favorite"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star-fill favorite"></i></button></td>
                     {% else %}
-                        <td><button class="favorite-btn" data-uuid="{{ credential.id }}"><i class="bi bi-star"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star"></i></button></td>
                     {% endif %}
                     <td>{{ credential.name }}</td>
                     <td>{{ credential.modified_at }}</td>
@@ -68,9 +68,9 @@
             {% elif credential.number %}
                 <tr class=table-row data-bs-toggle="offcanvas" data-type="card" data-uuid="{{ credential.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
                     {% if credential.is_favorited %}
-                        <td><button class="favorite-btn" data-uuid="{{ credential.id }}"><i class="bi bi-star-fill favorite"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star-fill favorite"></i></button></td>
                     {% else %}
-                        <td><button class="favorite-btn" data-uuid="{{ credential.id }}"><i class="bi bi-star"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star"></i></button></td>
                     {% endif %}
                     <td>{{ credential.name }}</td>
                     <td>{{ credential.modified_at }}</td>
@@ -78,9 +78,9 @@
             {% elif credential.code %}
                 <tr class=table-row data-bs-toggle="offcanvas" data-type="pin" data-uuid="{{ credential.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
                     {% if credential.is_favorited %}
-                        <td><button class="favorite-btn" data-uuid="{{ credential.id }}"><i class="bi bi-star-fill favorite"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star-fill favorite"></i></button></td>
                     {% else %}
-                        <td><button class="favorite-btn" data-uuid="{{ credential.id }}"><i class="bi bi-star"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star"></i></button></td>
                     {% endif %}
                     <td>{{ credential.name }}</td>
                     <td>{{ credential.modified_at }}</td>
@@ -88,9 +88,9 @@
             {% else %}
                 <tr class=table-row data-bs-toggle="offcanvas" data-type="secure-note" data-uuid="{{ credential.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
                     {% if credential.is_favorited %}
-                        <td><button class="favorite-btn" data-uuid="{{ credential.id }}"><i class="bi bi-star-fill favorite"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star-fill favorite"></i></button></td>
                     {% else %}
-                        <td><button class="favorite-btn" data-uuid="{{ credential.id }}"><i class="bi bi-star"></i></button></td>
+                        <td><button class="favorite-btn"><i class="bi bi-star"></i></button></td>
                     {% endif %}
                     <td>{{ credential.name }}</td>
                     <td>{{ credential.modified_at }}</td>
@@ -117,6 +117,6 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'password_manager/index.js' %}"></script>
-    <script src="{% static 'password_manager/favorites.js' %}"></script>
+    <script src="{% static 'password_manager/index.js' %}" type="module"></script>
+    <script src="{% static 'password_manager/favorites.js' %}" type="module"></script>
 {% endblock %}

@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 })
 
-async function favorite(type, uuid) {
+export async function favorite(type, uuid) {
     try {
         const response = await fetch('/favorite', {
             headers: {
@@ -53,7 +53,7 @@ async function favorite(type, uuid) {
     }
 }
 
-async function unfavorite(type, uuid) {
+export async function unfavorite(type, uuid) {
     try {
         const response = await fetch('/unfavorite', {
             headers: {
