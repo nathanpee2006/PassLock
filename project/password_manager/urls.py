@@ -12,5 +12,6 @@ urlpatterns = [
     path("get-credentials", views.get_credentials, name="get_credentials"),
     path("favorites", views.favorites, name="favorites"),
     path("favorite", views.favorite, name="favorite"),
-    path("unfavorite", views.unfavorite, name="unfavorite")
+    path("unfavorite", views.unfavorite, name="unfavorite"),
+    path("type/<str:type>", views.type, name="type")
 ]
