@@ -7,7 +7,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt 
 from django.urls import reverse
@@ -410,3 +410,26 @@ def unfavorite(request):
                 "error": "Invalid request method.",
                 "status": 400
         })
+
+
+def type(request, type):
+    
+    # GET
+    user_id = request.user.id
+    types = {
+        "login": Login,
+        "card": Card,
+        "pin": PIN,
+        "secure-note": SecureNote 
+    }
+    if type in types:
+        Type = types.get(type) 
+        credentials = Type.objects.filter(user_id=user_id)
+        return render(request, "password_manager/type.html", {
+                "type": type.capitalize(),
+                "credentials": credentials
+        })
+    else:
+        raise Http404("Credential type does not exist.")
+
+    
