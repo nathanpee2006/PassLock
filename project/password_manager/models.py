@@ -21,7 +21,7 @@ class CommonInfo(models.Model):
 class Login(CommonInfo):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=100)
-    password = models.TextField()
+    password = models.CharField(max_length=100)
     website = models.URLField(null=True, blank=True)
     note = models.TextField(blank=True)
     password_nonce = models.CharField(max_length=24, default="")

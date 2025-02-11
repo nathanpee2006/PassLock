@@ -33,7 +33,6 @@ def index(request):
     credentials = sorted(credentials_list, key=lambda credential:credential.modified_at, reverse=True)
 
     return render(request, "password_manager/index.html", {
-        "form": LoginForm(),
         "credentials": credentials 
     })
 
@@ -231,17 +230,17 @@ def get_credentials(request):
     if request.method == "POST":
 
         # Decrypt encrypted data encryption key
-        # encrypted_DEK = request.session.get("encrypted_DEK")
-        # if encrypted_DEK:
-        #     nonce = encrypted_DEK["nonce"]
-        #     ciphertext = encrypted_DEK["ciphertext"]
-        #     tag = encrypted_DEK["tag"]
-        #     KEK = settings.KEY_ENCRYPTION_KEY
-        #     result = utils.decrypt_data_encryption_key(nonce, ciphertext, tag, KEK)
-        #     DEK = result["plaintext"]
-        # else:
-        #     messages.error("Error occured. Please login again.")
-        #     HttpResponseRedirect(reverse("login")) 
+        encrypted_DEK = request.session.get("encrypted_DEK")
+        if encrypted_DEK:
+            nonce = encrypted_DEK["nonce"]
+            ciphertext = encrypted_DEK["ciphertext"]
+            tag = encrypted_DEK["tag"]
+            KEK = settings.KEY_ENCRYPTION_KEY
+            result = utils.decrypt_data_encryption_key(nonce, ciphertext, tag, KEK)
+            DEK = result["plaintext"]
+        else:
+            messages.error("Error occured. Please login again.")
+            HttpResponseRedirect(reverse("login")) 
 
         # Ensure user is first authenticated 
         data = json.loads(request.body) 
@@ -251,24 +250,34 @@ def get_credentials(request):
 
         if type == "login":
             instance = Login.objects.get(id=uuid, user_id=user_id)
+            password = utils.decrypt_data(instance.password_nonce, instance.password, instance.password_tag, DEK)            
+            instance.password = password["plaintext"] 
             return JsonResponse({
                 "form": LoginForm(instance=instance).as_div(),
                 "is_favorited": instance.is_favorited
             })
         elif type == "card":
             instance = Card.objects.get(id=uuid, user_id=user_id)
+            number = utils.decrypt_data(instance.number_nonce, instance.number, instance.number_tag, DEK) 
+            instance.number = number["plaintext"]
+            cvv = utils.decrypt_data(instance.cvv_nonce, instance.cvv, instance.cvv_tag, DEK)
+            instance.cvv = cvv["plaintext"]
             return JsonResponse({
                 "form": CardForm(instance=instance).as_div(),
                 "is_favorited": instance.is_favorited
             })
         elif type == "pin":
             instance = PIN.objects.get(id=uuid, user_id=user_id)
+            code = utils.decrypt_data(instance.code_nonce, instance.code, instance.code_tag, DEK)
+            instance.code = code["plaintext"]
             return JsonResponse({
                 "form": PINForm(instance=instance).as_div(),
                 "is_favorited": instance.is_favorited
             })
         elif type == "secure-note":
             instance = SecureNote.objects.get(id=uuid, user_id=user_id)
+            notes = utils.decrypt_data(instance.notes_nonce, instance.notes, instance.notes_tag, DEK)
+            instance.notes = notes["plaintext"]
             return JsonResponse({
                 "form": SecureNoteForm(instance=instance).as_div(),
                 "is_favorited": instance.is_favorited

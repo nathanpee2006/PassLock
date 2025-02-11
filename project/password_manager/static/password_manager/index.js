@@ -60,6 +60,25 @@ async function getForm(type) {
         const json = await response.json();
         if (json.form) {
             document.getElementById('form-fields').innerHTML = json.form;
+
+            if (document.getElementById('form-fields').querySelector('input[name=password]')) {
+                const passwordField = document.getElementById('form-fields').querySelector('input[name=password]'); 
+                passwordField.type = 'password';
+                toggleVisibility(passwordField)
+            }
+            if (document.getElementById('form-fields').querySelector('input[name=number]') && document.getElementById('form-fields').querySelector('input[name=cvv]')) {
+                const numberField = document.getElementById('form-fields').querySelector('input[name=number]');
+                numberField.type = 'password'; 
+                toggleVisibility(numberField);
+                const cvvField = document.getElementById('form-fields').querySelector('input[name=cvv]');
+                cvvField.type = 'password';
+                toggleVisibility(cvvField);
+            }
+            if (document.getElementById('form-fields').querySelector('input[name=code]')) {
+                const codeField = document.getElementById('form-fields').querySelector('input[name=code]');
+                codeField.type = 'password';
+                toggleVisibility(codeField);
+            }
         }
         else {
             document.getElementById('form-fields').innerHTML = json.error;
@@ -96,6 +115,24 @@ async function getUserCredentials(type, uuid) {
         if (json.form) {
             document.getElementById('credential-form-fields').innerHTML = json.form;
 
+            if (document.querySelector('.offcanvas').querySelector('input[name=password]')) {
+                const passwordField = document.querySelector('.offcanvas').querySelector('input[name=password]'); 
+                passwordField.type = 'password';
+                toggleVisibility(passwordField)
+            }
+            if (document.querySelector('.offcanvas').querySelector('input[name=number]') && document.querySelector('.offcanvas').querySelector('input[name=cvv]')) {
+                const numberField = document.querySelector('.offcanvas').querySelector('input[name=number]');
+                numberField.type = 'password'; 
+                toggleVisibility(numberField);
+                const cvvField = document.querySelector('.offcanvas').querySelector('input[name=cvv]');
+                cvvField.type = 'password';
+                toggleVisibility(cvvField);
+            }if (document.querySelector('.offcanvas').querySelector('input[name=code]')) {
+                const codeField = document.querySelector('.offcanvas').querySelector('input[name=code]');
+                codeField.type = 'password';
+                toggleVisibility(codeField);
+            }
+
             let name = document.querySelector('.offcanvas').querySelector('input[name=name]').value;
             document.querySelector('.offcanvas-title').innerHTML = name;
 
@@ -124,4 +161,24 @@ async function getUserCredentials(type, uuid) {
     } catch (error) {
         console.error(error.message);
     }
+}
+
+
+function toggleVisibility(field) {
+    const toggleVisibilityBtn = document.createElement('button');
+    toggleVisibilityBtn.className = 'eye-icon';
+    toggleVisibilityBtn.type = 'button';
+    toggleVisibilityBtn.innerHTML = '<i class="bi bi-eye"></i>';
+
+    field.insertAdjacentElement("afterend", toggleVisibilityBtn)
+
+    toggleVisibilityBtn.addEventListener('click', () => {
+        if (toggleVisibilityBtn.innerHTML === '<i class="bi bi-eye"></i>') {
+            field.type = 'text';
+            toggleVisibilityBtn.innerHTML = '<i class="bi bi-eye-slash"></i>';
+        } else {
+            field.type = 'password';
+            toggleVisibilityBtn.innerHTML = '<i class="bi bi-eye"></i>';
+        }
+    })
 }
