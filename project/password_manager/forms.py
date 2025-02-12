@@ -1,4 +1,4 @@
-from django.forms import ModelForm, PasswordInput 
+from django.forms import ModelForm 
 from password_manager.models import Login, Card, PIN, SecureNote
 
 

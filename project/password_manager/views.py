@@ -291,6 +291,55 @@ def get_credentials(request):
         return JsonResponse({"error": "Invalid request method."})
 
 
+def edit(request, uuid):
+
+    # PATCH
+    if request.method == "PATCH":
+        data = json.loads(request.body)
+        print(data)
+        print(uuid)
+
+        return JsonResponse({
+            "message": "Request receieved.",
+            "status": 200
+        })
+
+
+def delete(request, uuid):
+
+    # DELETE
+    if request.method == "DELETE":
+        data = json.loads(request.body)
+        type = data["type"]
+        user_id = request.user.id 
+
+        types = {
+            "login": Login,
+            "card": Card,
+            "pin": PIN,
+            "secure-note": SecureNote 
+        }
+
+        try:
+            Type = types.get(type)
+            credential = Type.objects.get(id=uuid, user_id=user_id)
+            credential.delete()
+
+            return JsonResponse({
+                "message": "Successfully deleted credential.",
+                "status": 200
+            })
+
+        except KeyError:
+            return JsonResponse({
+                "error": "Unable to delete credential.",
+                "status": 400 
+            })
+    
+    else:
+        return JsonResponse({"error": "Invalid request method."})
+
+
 @login_required(login_url="/login")
 def favorites(request):
 

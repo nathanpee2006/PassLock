@@ -36,15 +36,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     document.getElementById('offcanvas-btn-close').addEventListener('click', () => {
-        if (window.location.hash = '#offcanvasScrolling') {
-            window.location.href = '/';
-        }
-        if (window.location.href.includes('/favorites#offcanvasScrolling')) {
-            window.location.href = '/favorites';
+        redirectToPrevPage();
+    })
+});
+
+
+function redirectToPrevPage() {
+    if (window.location.hash = '#offcanvasScrolling') {
+        window.location.href = '/';
+    }
+    if (window.location.href.includes('/favorites#offcanvasScrolling')) {
+        window.location.href = '/favorites';
+    }
+    if (window.location.href.includes('/type/login#offcanvasScrolling')) {
+        window.location.href = '/type/login';
+    }
+    if (window.location.href.includes('/type/card#offcanvasScrolling')) {
+        window.location.href = '/type/card';
+    }
+    if (window.location.href.includes('/type/pin#offcanvasScrolling')) {
+        window.location.href = '/type/pin';
+    }
+    if (window.location.href.includes('/type/secure-note#offcanvasScrolling')) {
+        window.location.href = '/type/secure-note';
+    }
+}
+
+
+function toggleVisibility(field) {
+    const toggleVisibilityBtn = document.createElement('button');
+    toggleVisibilityBtn.className = 'eye-icon';
+    toggleVisibilityBtn.type = 'button';
+    toggleVisibilityBtn.innerHTML = '<i class="bi bi-eye"></i>';
+
+    field.insertAdjacentElement("afterend", toggleVisibilityBtn)
+
+    toggleVisibilityBtn.addEventListener('click', () => {
+        if (toggleVisibilityBtn.innerHTML === '<i class="bi bi-eye"></i>') {
+            field.type = 'text';
+            toggleVisibilityBtn.innerHTML = '<i class="bi bi-eye-slash"></i>';
+        } else {
+            field.type = 'password';
+            toggleVisibilityBtn.innerHTML = '<i class="bi bi-eye"></i>';
         }
     })
-
-});
+}
 
 
 async function getForm(type) {
@@ -115,6 +151,31 @@ async function getUserCredentials(type, uuid) {
         if (json.form) {
             document.getElementById('credential-form-fields').innerHTML = json.form;
 
+            document.getElementById('credential-form-fields').querySelectorAll('input, textarea').forEach((field) => {
+                field.setAttribute('readonly', true);
+            })
+
+            let name = document.querySelector('.offcanvas').querySelector('input[name=name]').value;
+            document.querySelector('.offcanvas-title').innerHTML = name;
+
+            const favoriteButton = document.createElement('button');
+            favoriteButton.className = 'favorite-btn';
+            if (!json.is_favorited) {
+                favoriteButton.innerHTML = '<i class="bi bi-star"></i>';
+            } else {
+                favoriteButton.innerHTML = '<i class="bi bi-star-fill favorite"></i>';
+            }
+            document.querySelector('.offcanvas-title').insertAdjacentElement("afterend", favoriteButton);
+            favoriteButton.addEventListener('click', () => {
+                if (favoriteButton.firstChild.className === 'bi bi-star') {
+                    favorite(type, uuid);
+                    favoriteButton.firstChild.className = 'bi bi-star-fill favorite';
+                } else {
+                    unfavorite(type, uuid);
+                    favoriteButton.firstChild.className = 'bi bi-star';
+                }
+            })
+
             if (document.querySelector('.offcanvas').querySelector('input[name=password]')) {
                 const passwordField = document.querySelector('.offcanvas').querySelector('input[name=password]'); 
                 passwordField.type = 'password';
@@ -133,27 +194,19 @@ async function getUserCredentials(type, uuid) {
                 toggleVisibility(codeField);
             }
 
-            let name = document.querySelector('.offcanvas').querySelector('input[name=name]').value;
-            document.querySelector('.offcanvas-title').innerHTML = name;
-
-            const favoriteButton = document.createElement('button');
-            favoriteButton.className = 'favorite-btn';
-            if (!json.is_favorited) {
-                favoriteButton.innerHTML = '<i class="bi bi-star"></i>';
-            } else {
-                favoriteButton.innerHTML = '<i class="bi bi-star-fill favorite"></i>';
-            }
-
-            document.querySelector('.offcanvas-title').insertAdjacentElement("afterend", favoriteButton);
-            favoriteButton.addEventListener('click', () => {
-                if (favoriteButton.firstChild.className === 'bi bi-star') {
-                    favorite(type, uuid);
-                    favoriteButton.firstChild.className = 'bi bi-star-fill favorite';
-                } else {
-                    unfavorite(type, uuid);
-                    favoriteButton.firstChild.className = 'bi bi-star';
-                }
-            })
+            const editBtn = document.createElement('button'); 
+            editBtn.textContent = 'Edit';
+            editBtn.className = 'btn btn-primary';
+            editBtn.id = 'edit-btn'
+            editBtn.type = 'button';
+            editBtn.addEventListener('click', () => editUserCredentials(type, uuid));
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.className = 'btn btn-danger';
+            deleteBtn.id = 'delete-btn';
+            deleteBtn.type = 'button';
+            deleteBtn.addEventListener('click', () => deleteUserCredentials(type, uuid));
+            document.getElementById('credential-form').append(editBtn, deleteBtn);
         }
         else {
             document.getElementById('credential-form-fields').innerHTML = json.error;
@@ -164,21 +217,78 @@ async function getUserCredentials(type, uuid) {
 }
 
 
-function toggleVisibility(field) {
-    const toggleVisibilityBtn = document.createElement('button');
-    toggleVisibilityBtn.className = 'eye-icon';
-    toggleVisibilityBtn.type = 'button';
-    toggleVisibilityBtn.innerHTML = '<i class="bi bi-eye"></i>';
+async function editUserCredentials(type, uuid) {
+    
+    console.log(type, uuid);
 
-    field.insertAdjacentElement("afterend", toggleVisibilityBtn)
+    document.getElementById('credential-form-fields').querySelectorAll('input, textarea').forEach((field) => {
+        field.removeAttribute('readonly');
+    })    
+    
+    const csrftoken = document.getElementById('credential-form').querySelector('input[name=csrfmiddlewaretoken]').value;
 
-    toggleVisibilityBtn.addEventListener('click', () => {
-        if (toggleVisibilityBtn.innerHTML === '<i class="bi bi-eye"></i>') {
-            field.type = 'text';
-            toggleVisibilityBtn.innerHTML = '<i class="bi bi-eye-slash"></i>';
-        } else {
-            field.type = 'password';
-            toggleVisibilityBtn.innerHTML = '<i class="bi bi-eye"></i>';
+    document.getElementById('edit-btn').style.display = 'none';
+    document.getElementById('delete-btn').style.display = 'none';
+    
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = 'Save';
+    saveBtn.className = 'btn btn-success';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.className = 'btn btn-danger';
+    document.getElementById('credential-form').append(saveBtn, cancelBtn);
+
+    try {
+        const response = await fetch(`edit/credential/${uuid}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            method: 'PATCH',
+            body: JSON.stringify({
+                type: type
+            }),
+            mode: 'same-origin'
+        });
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
         }
-    })
+
+        const json = await response.json(); 
+        console.log(json);
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+
+async function deleteUserCredentials(type, uuid) {
+
+    console.log(type, uuid);
+    const csrftoken = document.getElementById('credential-form').querySelector('input[name=csrfmiddlewaretoken]').value;
+
+    try {
+        const response = await fetch(`/delete/credential/${uuid}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            method: 'DELETE',
+            body: JSON.stringify({
+                type: type
+            }),
+            mode: 'same-origin'
+        });
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        const json = await response.json(); 
+        console.log(json);
+
+        redirectToPrevPage();
+
+    } catch (error) {
+        console.error(error.message);
+    }
 }
