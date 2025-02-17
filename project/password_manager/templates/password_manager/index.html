@@ -3,6 +3,12 @@
 
 {% block body %}
 
+    {% if messages %}
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
     <h2>Hello, {{ user.username }}!</h2>
 
     <!-- Button trigger modal -->
@@ -24,7 +30,7 @@
                             <div>{{ message }}</div>
                         {% endfor %}
                     {% endif %}
-                    <form action="{% url 'add' type='login' %}" method="POST">
+                    <form method="POST">
                         <select>
                             <option selected disabled>Select type...</option>
                             <option value="login">Login</option>

@@ -199,7 +199,47 @@ async function getUserCredentials(type, uuid) {
             editBtn.className = 'btn btn-primary';
             editBtn.id = 'edit-btn'
             editBtn.type = 'button';
-            editBtn.addEventListener('click', () => editUserCredentials(type, uuid));
+            editBtn.addEventListener('click', () => {
+                document.getElementById('credential-form-fields').querySelectorAll('input, textarea').forEach((field) => {
+                    field.removeAttribute('readonly');
+                })    
+            
+                document.getElementById('edit-btn').style.display = 'none';
+                document.getElementById('delete-btn').style.display = 'none';
+
+                const saveBtn = document.createElement('button');
+                saveBtn.textContent = 'Save';
+                saveBtn.className = 'btn btn-success';
+                saveBtn.id = 'save-btn';
+                saveBtn.type = 'submit';
+
+                saveBtn.addEventListener('mouseover', () => {
+                    document.getElementById('credential-form').setAttribute('action', `/edit/credential/${type}/${uuid}`)   
+                    document.getElementById('credential-form').setAttribute('method', 'POST')
+                })
+                saveBtn.addEventListener('mouseout', () => {
+                    document.getElementById('credential-form').removeAttribute('action')
+                    document.getElementById('credential-form').removeAttribute('method')
+                })
+                
+                const cancelBtn = document.createElement('button');
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.className = 'btn btn-danger';
+                cancelBtn.id = 'cancel-btn';
+                cancelBtn.type = 'button';
+                cancelBtn.addEventListener('click', () => {
+                    document.getElementById('save-btn').remove();
+                    document.getElementById('cancel-btn').remove();
+
+                    document.getElementById('edit-btn').style.display = 'inline';
+                    document.getElementById('delete-btn').style.display = 'inline';
+
+                    document.getElementById('credential-form-fields').querySelectorAll('input, textarea').forEach((field) => {
+                        field.setAttribute('readonly', true);
+                    })
+                })
+                document.getElementById('credential-form').append(saveBtn, cancelBtn);
+            });
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = 'Delete';
             deleteBtn.className = 'btn btn-danger';
@@ -215,28 +255,27 @@ async function getUserCredentials(type, uuid) {
         console.error(error.message);
     }
 }
-
+ 
 
 async function editUserCredentials(type, uuid) {
     
+    // When 'Edit' button is clicked
+        // remove form field attribute read-only (to make it editable)
+        // hide 'Edit' and 'Delete' button
+        // create 'Save' and 'Cancel' button
+    // When 'Save' button is clicked
+        // make POST fetch request to route
+        // update columns
+        // save changes to database
+        // redirect user back to index or offcanvas with updated changes ??? 
+    // When 'Cancel' button is clicked
+        // Delete 'Save' and 'Cancel' button
+        // Show 'Edit' and 'Delete' button
+        // Add readonly attribute to form fields
+
     console.log(type, uuid);
 
-    document.getElementById('credential-form-fields').querySelectorAll('input, textarea').forEach((field) => {
-        field.removeAttribute('readonly');
-    })    
-    
     const csrftoken = document.getElementById('credential-form').querySelector('input[name=csrfmiddlewaretoken]').value;
-
-    document.getElementById('edit-btn').style.display = 'none';
-    document.getElementById('delete-btn').style.display = 'none';
-    
-    const saveBtn = document.createElement('button');
-    saveBtn.textContent = 'Save';
-    saveBtn.className = 'btn btn-success';
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = 'Cancel';
-    cancelBtn.className = 'btn btn-danger';
-    document.getElementById('credential-form').append(saveBtn, cancelBtn);
 
     try {
         const response = await fetch(`edit/credential/${uuid}`, {
@@ -268,15 +307,12 @@ async function deleteUserCredentials(type, uuid) {
     const csrftoken = document.getElementById('credential-form').querySelector('input[name=csrfmiddlewaretoken]').value;
 
     try {
-        const response = await fetch(`/delete/credential/${uuid}`, {
+        const response = await fetch(`/delete/credential/${type}/${uuid}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrftoken
             },
             method: 'DELETE',
-            body: JSON.stringify({
-                type: type
-            }),
             mode: 'same-origin'
         });
         if (!response.ok) {
