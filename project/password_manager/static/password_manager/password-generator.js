@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+    window.onload = generatePassword;
+
     const generatePasswordBtn = document.getElementById('btn-generate-password');
     generatePasswordBtn.addEventListener('click', () => generatePassword());
 
@@ -12,8 +14,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('input[type=checkbox]').forEach((checkbox) => {
         checkbox.checked = true;
         checkbox.addEventListener('click', generatePassword);
+        checkbox.addEventListener('change', (event) => {
+            const tickedCheckboxes = document.querySelectorAll('input[type=checkbox]:checked');
+            if (tickedCheckboxes.length === 0 && !event.target.checked) {
+                event.target.checked = true;
+            }
+            generatePassword();
+        })
     })
-    // How to prevent all checkboxes from being unchecked
 })
 
 function generatePassword() {
