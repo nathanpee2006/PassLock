@@ -251,6 +251,7 @@ async function getUserCredentials(type, uuid) {
                 cancelBtn.id = 'cancel-btn';
                 cancelBtn.type = 'button';
                 cancelBtn.addEventListener('click', () => {
+                    document.getElementById('credential-form').reset();
                     document.getElementById('save-btn').remove();
                     document.getElementById('cancel-btn').remove();
 
