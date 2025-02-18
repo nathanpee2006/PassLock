@@ -588,9 +588,9 @@ def type(request, type):
     }
     if type in types:
         Type = types.get(type) 
-        credentials = Type.objects.filter(user_id=user_id)
+        credentials = Type.objects.filter(user_id=user_id).order_by('-modified_at')
         return render(request, "password_manager/type.html", {
-                "type": type.capitalize(),
+                "type": type.title().replace('-', ' '),
                 "credentials": credentials
         })
     else:
