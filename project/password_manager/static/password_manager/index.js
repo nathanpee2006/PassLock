@@ -63,13 +63,27 @@ function redirectToPrevPage() {
 }
 
 
+function copyToClipboard(field) {
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'copy-icon';
+    copyBtn.type = 'button';
+    copyBtn.innerHTML = '<i class="bi bi-copy"></i>';
+    field.insertAdjacentElement('afterend', copyBtn);
+
+    copyBtn.addEventListener('click', () => {
+        field.select();
+        navigator.clipboard.writeText(field.value);
+    })
+}
+
+
 function toggleVisibility(field) {
     const toggleVisibilityBtn = document.createElement('button');
     toggleVisibilityBtn.className = 'eye-icon';
     toggleVisibilityBtn.type = 'button';
     toggleVisibilityBtn.innerHTML = '<i class="bi bi-eye"></i>';
 
-    field.insertAdjacentElement("afterend", toggleVisibilityBtn)
+    field.insertAdjacentElement('afterend', toggleVisibilityBtn);
 
     toggleVisibilityBtn.addEventListener('click', () => {
         if (toggleVisibilityBtn.innerHTML === '<i class="bi bi-eye"></i>') {
@@ -100,7 +114,7 @@ async function getForm(type) {
             if (document.getElementById('form-fields').querySelector('input[name=password]')) {
                 const passwordField = document.getElementById('form-fields').querySelector('input[name=password]'); 
                 passwordField.type = 'password';
-                toggleVisibility(passwordField)
+                toggleVisibility(passwordField);
             }
             if (document.getElementById('form-fields').querySelector('input[name=number]') && document.getElementById('form-fields').querySelector('input[name=cvv]')) {
                 const numberField = document.getElementById('form-fields').querySelector('input[name=number]');
@@ -176,28 +190,37 @@ async function getUserCredentials(type, uuid) {
                 }
             })
 
+            if (document.querySelector('.offcanvas').querySelector('input[name=username]')) {
+                const usernameField = document.querySelector('.offcanvas').querySelector('input[name=username]');
+                copyToClipboard(usernameField);
+            }
             if (document.querySelector('.offcanvas').querySelector('input[name=password]')) {
                 const passwordField = document.querySelector('.offcanvas').querySelector('input[name=password]'); 
                 passwordField.type = 'password';
-                toggleVisibility(passwordField)
+                toggleVisibility(passwordField);
+                copyToClipboard(passwordField);
             }
             if (document.querySelector('.offcanvas').querySelector('input[name=number]') && document.querySelector('.offcanvas').querySelector('input[name=cvv]')) {
                 const numberField = document.querySelector('.offcanvas').querySelector('input[name=number]');
                 numberField.type = 'password'; 
                 toggleVisibility(numberField);
+                copyToClipboard(numberField);
                 const cvvField = document.querySelector('.offcanvas').querySelector('input[name=cvv]');
                 cvvField.type = 'password';
                 toggleVisibility(cvvField);
-            }if (document.querySelector('.offcanvas').querySelector('input[name=code]')) {
+                copyToClipboard(cvvField);
+            }
+            if (document.querySelector('.offcanvas').querySelector('input[name=code]')) {
                 const codeField = document.querySelector('.offcanvas').querySelector('input[name=code]');
                 codeField.type = 'password';
                 toggleVisibility(codeField);
+                copyToClipboard(codeField);
             }
 
             const editBtn = document.createElement('button'); 
             editBtn.textContent = 'Edit';
             editBtn.className = 'btn btn-primary';
-            editBtn.id = 'edit-btn'
+            editBtn.id = 'edit-btn';
             editBtn.type = 'button';
             editBtn.addEventListener('click', () => {
                 document.getElementById('credential-form-fields').querySelectorAll('input, textarea').forEach((field) => {
@@ -256,50 +279,6 @@ async function getUserCredentials(type, uuid) {
     }
 }
  
-
-async function editUserCredentials(type, uuid) {
-    
-    // When 'Edit' button is clicked
-        // remove form field attribute read-only (to make it editable)
-        // hide 'Edit' and 'Delete' button
-        // create 'Save' and 'Cancel' button
-    // When 'Save' button is clicked
-        // make POST fetch request to route
-        // update columns
-        // save changes to database
-        // redirect user back to index or offcanvas with updated changes ??? 
-    // When 'Cancel' button is clicked
-        // Delete 'Save' and 'Cancel' button
-        // Show 'Edit' and 'Delete' button
-        // Add readonly attribute to form fields
-
-    console.log(type, uuid);
-
-    const csrftoken = document.getElementById('credential-form').querySelector('input[name=csrfmiddlewaretoken]').value;
-
-    try {
-        const response = await fetch(`edit/credential/${uuid}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken
-            },
-            method: 'PATCH',
-            body: JSON.stringify({
-                type: type
-            }),
-            mode: 'same-origin'
-        });
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
-
-        const json = await response.json(); 
-        console.log(json);
-    } catch (error) {
-        console.error(error.message);
-    }
-}
-
 
 async function deleteUserCredentials(type, uuid) {
 
