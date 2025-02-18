@@ -596,4 +596,8 @@ def type(request, type):
     else:
         raise Http404("Credential type does not exist.")
 
-    
+
+def password_generator(request):
+
+    # GET
+    return render(request, "password_manager/password-generator.html")    
