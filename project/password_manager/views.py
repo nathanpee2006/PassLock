@@ -601,3 +601,9 @@ def password_generator(request):
 
     # GET
     return render(request, "password_manager/password-generator.html")    
+
+
+def password_health_check(request):
+
+    # GET
+    return render(request, "password_manager/password-health-check.html")

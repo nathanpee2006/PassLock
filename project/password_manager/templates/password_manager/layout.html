@@ -10,6 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="{% static 'password_manager/styles.css' %}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script async type="text/javascript" src="https://cdn.enzoic.com/js/enzoic.min.js"></script>
     {% block script %}
     {% endblock %}
 </head>
@@ -70,7 +71,7 @@
                                         </a>
                                 </li>
                                 <li>
-                                    <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Item</span>
+                                    <a href="{% url 'password-health-check' %}" class="nav-link px-0"> <span class="d-none d-sm-inline">Password Health Check</span>
                                         </a>
                                 </li>
                             </ul>

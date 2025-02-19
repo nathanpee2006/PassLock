@@ -97,6 +97,17 @@ function toggleVisibility(field) {
 }
 
 
+function passwordStrengthMeter(field) {
+    const options = {
+        theme: 'default',
+        minimumPasswordScore: Enzoic.PASSWORD_STRENGTH.Strong,
+        cssSuccessClass: 'enz-success',
+        cssFailClass: 'enz-fail'
+    };
+    Enzoic.applyToInputElement(field, options);
+}
+
+
 async function getForm(type) {
     const params = new URLSearchParams({
         'type': type
@@ -115,6 +126,7 @@ async function getForm(type) {
                 const passwordField = document.getElementById('form-fields').querySelector('input[name=password]'); 
                 passwordField.type = 'password';
                 toggleVisibility(passwordField);
+                passwordStrengthMeter(passwordField);
             }
             if (document.getElementById('form-fields').querySelector('input[name=number]') && document.getElementById('form-fields').querySelector('input[name=cvv]')) {
                 const numberField = document.getElementById('form-fields').querySelector('input[name=number]');
@@ -199,6 +211,7 @@ async function getUserCredentials(type, uuid) {
                 passwordField.type = 'password';
                 toggleVisibility(passwordField);
                 copyToClipboard(passwordField);
+                passwordStrengthMeter(passwordField);
             }
             if (document.querySelector('.offcanvas').querySelector('input[name=number]') && document.querySelector('.offcanvas').querySelector('input[name=cvv]')) {
                 const numberField = document.querySelector('.offcanvas').querySelector('input[name=number]');
