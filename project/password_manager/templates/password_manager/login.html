@@ -13,7 +13,7 @@
     <form action="{% url 'login' %}" method="POST">
         {% csrf_token %}
         <input autofocus type="text" name="username" placeholder="Username">
-        <input type="password" name="password" placeholder="Master Password" enz-enable>
+        <input type="password" name="password" placeholder="Master Password">
         <button type="submit">Login</button>
     </form>
     <a href="{% url 'register' %}">Register</a>
