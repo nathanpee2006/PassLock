@@ -86,7 +86,7 @@ I believe my project is distinct and complex because:
 Provide clear instructions on how to set up and run your project. Example:
 1. Clone the repository:
     ```sh
-    git clone https://github.com/nathanpee2006/password-manager.git
+    git clone git@github.com:nathanpee2006/password-manager.git
     cd password-manager/project 
     ```
 2. Install dependencies
@@ -95,7 +95,7 @@ Provide clear instructions on how to set up and run your project. Example:
     python -m venv env
 
     If using Windows:
-    env/Scripts/activate
+    env\Scripts\activate OR env\Scripts\activate.bat 
 
     If using Linux:
     source env/bin/activate
