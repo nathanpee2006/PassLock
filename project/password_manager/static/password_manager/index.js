@@ -65,7 +65,7 @@ function redirectToPrevPage() {
 
 function copyToClipboard(field) {
     const copyBtn = document.createElement('button');
-    copyBtn.className = 'copy-icon';
+    copyBtn.className = 'btn btn-outline-secondary';
     copyBtn.type = 'button';
     copyBtn.innerHTML = '<i class="bi bi-copy"></i>';
     field.insertAdjacentElement('afterend', copyBtn);
@@ -79,7 +79,7 @@ function copyToClipboard(field) {
 
 function toggleVisibility(field) {
     const toggleVisibilityBtn = document.createElement('button');
-    toggleVisibilityBtn.className = 'eye-icon';
+    toggleVisibilityBtn.className = 'btn btn-outline-secondary';
     toggleVisibilityBtn.type = 'button';
     toggleVisibilityBtn.innerHTML = '<i class="bi bi-eye"></i>';
 
@@ -121,6 +121,19 @@ async function getForm(type) {
         const json = await response.json();
         if (json.form) {
             document.getElementById('form-fields').innerHTML = json.form;
+
+            document.getElementById('form-fields').querySelectorAll('div').forEach((div) => {
+                div.className = 'mb-3';
+            })
+            document.getElementById('form-fields').querySelectorAll('label').forEach((label) => {
+                label.className = 'form-label';
+            })
+            document.getElementById('form-fields').querySelectorAll('input, textarea').forEach((field) => {
+                const div = document.createElement('div');
+                div.className = 'input-group';
+                field.parentNode.insertBefore(div, field);
+                div.appendChild(field)
+            })
 
             if (document.getElementById('form-fields').querySelector('input[name=password]')) {
                 const passwordField = document.getElementById('form-fields').querySelector('input[name=password]'); 
@@ -176,6 +189,19 @@ async function getUserCredentials(type, uuid) {
         console.log(json);
         if (json.form) {
             document.getElementById('credential-form-fields').innerHTML = json.form;
+
+            document.getElementById('credential-form-fields').querySelectorAll('div').forEach((div) => {
+                div.className = 'mb-3';
+            })
+            document.getElementById('credential-form-fields').querySelectorAll('label').forEach((label) => {
+                label.className = 'form-label';
+            })
+            document.getElementById('credential-form-fields').querySelectorAll('input, textarea').forEach((field) => {
+                const div = document.createElement('div');
+                div.className = 'input-group';
+                field.parentNode.insertBefore(div, field);
+                div.appendChild(field)
+            })
 
             document.getElementById('credential-form-fields').querySelectorAll('input, textarea').forEach((field) => {
                 field.setAttribute('readonly', true);

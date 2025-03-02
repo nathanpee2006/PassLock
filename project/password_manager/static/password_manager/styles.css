@@ -1,35 +1,51 @@
+body {
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+   body {
+    font-size: 20px;
+   } 
+}
+
 textarea {
     height: 100px;
+}
+
+.form-footer {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
 }
 
 .table-row td:not(:first-child) {
     cursor: pointer;
 }
 
+.space-between {
+    display: flex;
+    justify-content: space-between; 
+}
+
 .favorite-btn {
     border: none;
     background: none;
     padding: 0px;
-    margin: 0px;
-}
-
-.copy-icon {
-    border: none;
-    background: none;
-    padding: 0px;
-    margin: 0px;
-}
-
-.eye-icon {
-    border: none;
-    background: none;
-    padding: 0px;
-    margin: 0px;
+    margin-left: 5px;
 }
 
 .favorite {
     color: #FFD700;
 }
+
+#edit-btn {
+    margin-right: 5px;
+}
+
+#save-btn {
+    margin-right: 5px;
+}
+
 
 
 

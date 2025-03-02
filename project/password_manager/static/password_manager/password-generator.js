@@ -2,6 +2,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.onload = generatePassword;
 
+    if (document.getElementById('generated-password') !== null) {
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'btn btn-outline-secondary';
+        copyBtn.type = 'button';
+        copyBtn.innerHTML = '<i class="bi bi-copy"></i>';
+        document.getElementById('generated-password').insertAdjacentElement('afterend', copyBtn);
+
+        copyBtn.addEventListener('click', () => {
+            document.getElementById('generated-password').select();
+            navigator.clipboard.writeText(document.getElementById('generated-password').value);
+        })
+    }
+
     const generatePasswordBtn = document.getElementById('btn-generate-password');
     generatePasswordBtn.addEventListener('click', () => generatePassword());
 

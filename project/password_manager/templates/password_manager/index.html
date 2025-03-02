@@ -9,14 +9,13 @@
         {% endfor %}
     {% endif %}
 
-    <h2>Hello, {{ user.username }}!</h2>
+    <div class="space-between">
+        <h2>All Items</h2>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            + Add Item
+        </button>
+    </div>
 
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        Add Item
-    </button>
-
-    <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -31,13 +30,15 @@
                         {% endfor %}
                     {% endif %}
                     <form method="POST">
-                        <select>
-                            <option selected disabled>Select type...</option>
-                            <option value="login">Login</option>
-                            <option value="card">Card</option>
-                            <option value="pin">PIN</option>
-                            <option value="secure-note">Secure Note</option>
-                        </select>
+                        <div class="mb-3">
+                            <select class="form-select" aria-label="select-credential-type">
+                                <option selected disabled>Select type...</option>
+                                <option value="login">Login</option>
+                                <option value="card">Card</option>
+                                <option value="pin">PIN</option>
+                                <option value="secure-note">Secure Note</option>
+                            </select>
+                        </div>
                         {% csrf_token %}
                         <div id="form-fields">
                         </div>
@@ -62,7 +63,7 @@
         <tbody>
           {% for credential in credentials %}
             {% if credential.password %}
-                <tr class=table-row data-bs-toggle="offcanvas" data-type="login" data-uuid="{{ credential.id }}" href="#offcanvasScrolling" aria-controls="offcanvasScrolling">
+                <tr class=table-row data-bs-toggle="offcanvas" data-type="login" data-uuid="{{ credential.id }}" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">
                     {% if credential.is_favorited %}
                         <td><button class="favorite-btn"><i class="bi bi-star-fill favorite"></i></button></td>
                     {% else %}
